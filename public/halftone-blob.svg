@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+  <defs>
+    <pattern id="dots" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="2.4" cy="2.4" r="1.7" fill="#050505"/>
+    </pattern>
+    <radialGradient id="fade">
+      <stop offset=".52" stop-color="white"/>
+      <stop offset="1" stop-color="black"/>
+    </radialGradient>
+    <mask id="mask">
+      <ellipse cx="160" cy="82" rx="138" ry="112" fill="url(#fade)"/>
+    </mask>
+  </defs>
+  <path d="M0 0h300v220H0z" fill="url(#dots)" mask="url(#mask)"/>
+</svg>

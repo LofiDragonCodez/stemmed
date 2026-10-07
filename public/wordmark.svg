@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 170" role="img" aria-labelledby="title">
+  <title id="title">STEMMED</title>
+  <defs>
+    <filter id="ink-warp" x="-5%" y="-12%" width="110%" height="124%">
+      <feTurbulence baseFrequency=".025 .08" numOctaves="1" seed="7" type="fractalNoise" result="rough"/>
+      <feDisplacementMap in="SourceGraphic" in2="rough" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g fill="#050505">
+    <text x="28" y="116" font-family="Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" font-size="86" font-weight="900" letter-spacing="-5" filter="url(#ink-warp)" transform="rotate(-5 220 88)">STEMMED</text>
+    <path d="m354 17 13 27 28-11-17 25 23 19-31-4-10 31-8-31-31 5 22-20-17-25 29 11z"/>
+  </g>
+</svg>

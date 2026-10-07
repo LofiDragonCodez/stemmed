@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280">
+  <defs>
+    <pattern id="dots" width="7" height="7" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#050505"/>
+    </pattern>
+    <mask id="line">
+      <path d="M-20 100c68-8 55-84 121-82 67 2 16 128 81 140s84-78 139-31c49 42 38 104 103 104" fill="none" stroke="white" stroke-width="34" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <path d="M0 0h440v280H0z" fill="url(#dots)" mask="url(#line)"/>
+</svg>
