@@ -29,13 +29,20 @@ MusicBrainz requests use the `STEMMED/1.0 (mailto:contact@stemmed.app)` User-Age
 
 ### BPM and key
 
-ReccoBeats requires a Spotify track ID for audio-feature lookup. STEMMED does not use Spotify credentials or call Spotify: it can request BPM/key only when MusicBrainz has a Spotify track link for the matching recording. Otherwise those fields show `N/A`.
+STEMMED first looks up BPM and key by title and artist through GetSongBPM. Add `GETSONGBPM_API_KEY` to `.env.local` and to your hosting provider's environment settings. GetSongBPM requires a public backlink to `https://getsongbpm.com/`; keep the homepage footer link in place. ReccoBeats is used as a fallback when MusicBrainz can link the Apple-catalog recording to a Spotify ID. STEMMED does not require Spotify credentials or call Spotify directly. If neither source has the track, the fields show `N/A`.
 
 ## Deploy to Vercel
 
 1. Import this repository into [Vercel](https://vercel.com/new).
-2. Optionally add `GENIUS_ACCESS_TOKEN` to the Vercel project environment variables to enable the Genius producer-credit fallback.
+2. Add `GETSONGBPM_API_KEY` to the project environment variables for BPM/key lookups. Optionally add `GENIUS_ACCESS_TOKEN` to enable the Genius producer-credit fallback.
 3. Deploy. Vercel detects the Next.js app and runs the production build.
+
+## Deploy to Render
+
+1. Create a **Web Service** from this repository in [Render](https://render.com/).
+2. Set the build command to `npm install && npm run build` and the start command to `npm start`.
+3. Add `GETSONGBPM_API_KEY` in the service's environment settings. Optionally add `GENIUS_ACCESS_TOKEN` for the Genius producer-credit fallback.
+4. Deploy the service. Keep the GetSongBPM backlink on the public homepage; its API requires that backlink to be publicly accessible.
 
 The app keeps track-response and ReccoBeats caches in process memory. Vercel serverless instances do not share memory, so caches are best-effort and can be cold on a new instance. For shared, durable response caching, replace the in-memory LRU with Vercel KV or Upstash Redis.
 

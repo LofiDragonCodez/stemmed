@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { trackCache } from "@/lib/cache";
+import { getGetSongBpmFeatures } from "@/lib/getsongbpm";
 import { getProducerLookup } from "@/lib/producer";
 import { getAudioFeatures } from "@/lib/reccobeats";
 import { formatDuration, getAppleTrack } from "@/lib/apple";
@@ -34,28 +35,38 @@ export async function GET(_request: Request, context: RouteContext) {
     );
   }
 
-  let producerData: ProducerLookup | null;
-  try {
-    producerData = await getProducerLookup(
-      appleTrack.trackName,
-      appleTrack.artistName,
-    );
-  } catch (error) {
-    console.error("Producer lookup failed:", error);
-    producerData = null;
+  const [producerResult, getSongBpmResult] = await Promise.allSettled([
+    getProducerLookup(appleTrack.trackName, appleTrack.artistName),
+    getGetSongBpmFeatures(appleTrack.trackName, appleTrack.artistName),
+  ]);
+
+  const producerData: ProducerLookup | null =
+    producerResult.status === "fulfilled" ? producerResult.value : null;
+  if (producerResult.status === "rejected") {
+    console.error("Producer lookup failed:", producerResult.reason);
   }
 
   // ReccoBeats indexes audio features by Spotify ID. MusicBrainz sometimes links
-  // an Apple-catalog recording to Spotify; without that cross-reference, BPM/key
-  // remain unavailable rather than requiring Spotify credentials.
-  const features = await getAudioFeatures(producerData?.spotifyId ?? null);
+  // an Apple-catalog recording to Spotify; use it as a fallback to GetSongBPM.
+  const getSongBpmFeatures =
+    getSongBpmResult.status === "fulfilled"
+      ? getSongBpmResult.value
+      : { bpm: null, key: null };
+  if (getSongBpmResult.status === "rejected") {
+    console.error("GetSongBPM lookup failed:", getSongBpmResult.reason);
+  }
+
+  const features =
+    getSongBpmFeatures.bpm !== null && getSongBpmFeatures.key !== null
+      ? getSongBpmFeatures
+      : await getAudioFeatures(producerData?.spotifyId ?? null);
 
   const response: TrackDetails = {
     song: appleTrack.trackName ?? null,
     artist: appleTrack.artistName ?? null,
     producer: producerData?.producer ?? null,
-    bpm: features.bpm,
-    key: features.key,
+    bpm: getSongBpmFeatures.bpm ?? features.bpm,
+    key: getSongBpmFeatures.key ?? features.key,
     duration:
       appleTrack.trackTimeMillis == null
         ? null
